@@ -1,0 +1,3 @@
+--V016__Add_Index_Product_Recommendations
+
+CREATE INDEX idx_recommendations_customer ON product_recommendations(customer_id);

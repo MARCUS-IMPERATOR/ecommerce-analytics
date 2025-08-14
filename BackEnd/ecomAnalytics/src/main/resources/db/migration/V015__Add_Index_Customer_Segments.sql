@@ -1,0 +1,3 @@
+--V015__Add_Index_Customer_Segments
+
+CREATE INDEX idx_customer_segments_customer_id ON customer_segments(customer_id);
