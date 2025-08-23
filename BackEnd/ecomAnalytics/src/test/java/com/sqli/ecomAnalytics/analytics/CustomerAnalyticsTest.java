@@ -2,7 +2,6 @@ package com.sqli.ecomAnalytics.analytics;
 
 import com.sqli.ecomAnalytics.Analytics.CustomersAnalyticsService;
 import com.sqli.ecomAnalytics.dto.CustomerAnalyticsDto;
-import com.sqli.ecomAnalytics.entity.CustomerSegments;
 import com.sqli.ecomAnalytics.entity.Customers;
 import com.sqli.ecomAnalytics.entity.Segments;
 import com.sqli.ecomAnalytics.repository.CustomerRepository;
@@ -53,12 +52,10 @@ public class CustomerAnalyticsTest {
         LocalDateTime end = LocalDateTime.of(2025, 9, 20, 0, 0);
         LocalDateTime threshold = LocalDateTime.of(2025, 8, 30, 0, 0);
 
-        // Mock the segment distribution - now returns enum directly and count
         Object[] row = new Object[]{Segments.CHAMPION, 100L};
         List<Object[]> segmentList = Collections.singletonList(row);
         when(customerRepository.getCustomerCountBySegment()).thenReturn(segmentList);
 
-        // Mock other repository calls
         Customers c = createMockCustomer();
         when(customerRepository.findHighSpendingCustomers(any(BigDecimal.class))).thenReturn(List.of(c));
         when(customerRepository.getAverageLifetimeValue()).thenReturn(new BigDecimal("1500.00"));
@@ -66,10 +63,8 @@ public class CustomerAnalyticsTest {
         when(customerRepository.countChurnedCustomers(threshold)).thenReturn(50L);
         when(customerRepository.countAllCustomers()).thenReturn(1000L);
 
-        // Execute the test
         CustomerAnalyticsDto r = analyticsService.getAnalytics(start, end, threshold);
 
-        // Assertions
         assertThat(r).isNotNull();
         assertThat(r.getSegmentDistribution()).containsEntry("CHAMPION", 100L);
         assertThat(r.getTopCustomers()).hasSize(1);

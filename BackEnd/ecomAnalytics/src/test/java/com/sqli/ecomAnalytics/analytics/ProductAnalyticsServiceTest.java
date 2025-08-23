@@ -72,7 +72,7 @@ public class ProductAnalyticsServiceTest {
         assertThat(result.getCategoryPerformance().get(0).getTotalQuantitySold()).isEqualTo(100L);
 
         assertThat(result.getInventoryAnalysis()).hasSize(1);
-        assertThat(result.getInventoryAnalysis().get(0).getTurnoverRate()).isEqualTo(2.0); // 50/25
+        assertThat(result.getInventoryAnalysis().get(0).getTurnoverRate()).isEqualTo(2.0);
 
         assertThat(result.getLowStockAlerts()).hasSize(1);
         assertThat(result.getLowStockAlerts().get(0).getName()).isEqualTo("Mouse");

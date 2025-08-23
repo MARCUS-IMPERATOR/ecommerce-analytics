@@ -1,6 +1,7 @@
 package com.sqli.ecomAnalytics.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -63,6 +64,7 @@ public class Customers extends AbstractAudit {
     private List<Orders> orders;
 
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private CustomerSegments customerSegment;
 
     @JsonIgnore

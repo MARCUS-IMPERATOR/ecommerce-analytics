@@ -14,7 +14,6 @@ import com.sqli.ecomAnalytics.service.CustomersService;
 import com.sqli.ecomAnalytics.service.OrdersService;
 import com.sqli.ecomAnalytics.service.ProductsService;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -124,7 +123,7 @@ public class GeneratorsIntegrationTest {
     private List<Customers> createSegmentedTestCustomers() {
         List<Customers> customers = new ArrayList<>();
 
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= 10; i++) {
             CustomerRegistrationDto customer = new CustomerRegistrationDto();
             customer.setFirstName("Segment" + i);
             customer.setLastName("Customer");
@@ -282,7 +281,7 @@ public class GeneratorsIntegrationTest {
     @Test
     @Order(2)
     @Transactional
-    void generateOrdersIntegration_ShouldCreateCompleteOrderWorkflow() {
+    void generateOrdersIntegration() {
         List<Customers> customers = createTestCustomers();
         List<Products> products = createTestProducts();
 

@@ -42,13 +42,10 @@ public class DataGenerationService {
         logger.info("Starting data generation on application startup...");
 
         try {
-            // Check if data already exists
             if (shouldSkipGeneration()) {
                 logger.info("Data already exists, skipping generation");
                 return;
             }
-
-            // Generate in correct order
             generateCustomers();
             generateProducts();
             generateOrders();
@@ -57,8 +54,6 @@ public class DataGenerationService {
 
         } catch (Exception e) {
             logger.error("Failed to generate data on startup", e);
-            // Decide whether to fail fast or continue
-            // throw new RuntimeException("Data generation failed", e);
         }
     }
 

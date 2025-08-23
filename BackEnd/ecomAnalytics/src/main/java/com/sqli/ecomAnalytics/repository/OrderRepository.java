@@ -23,9 +23,6 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
     @Query("SELECT COUNT(o) FROM Orders o WHERE o.customer.customerId = :customerId AND o.status = 'DELIVERED'")
     int getOrderCountByCustomer(@Param("customerId") Integer customerId);
 
-
-    //KPI
-
     @Query("SELECT SUM(o.totalAmount) FROM Orders o WHERE o.orderDate BETWEEN :startDate AND :endDate AND o.status = 'DELIVERED'")
     BigDecimal getTotalRevenueByDateRange(@Param("startDate") LocalDateTime startDate,@Param("endDate") LocalDateTime endDate);
 

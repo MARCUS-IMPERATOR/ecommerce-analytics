@@ -51,7 +51,6 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST, request);
     }
 
-    // Handle validation errors from @Valid annotations
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleValidationErrors(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -65,7 +64,6 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST, request);
     }
 
-    // Catch-all for unexpected errors
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGenericError(
             Exception ex, HttpServletRequest request) {

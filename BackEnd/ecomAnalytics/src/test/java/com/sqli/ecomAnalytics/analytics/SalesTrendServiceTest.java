@@ -54,17 +54,15 @@ public class SalesTrendServiceTest {
         SalesTrendDto.MonthlySalesData augData = r.getMonthlySales().stream()
                 .filter(m -> m.getYear() == 2025 && m.getMonth() == 8)
                 .findFirst().orElseThrow();
-        assertThat(augData.getRevenue()).isEqualByComparingTo("2500.00"); // 1000 + 1500
-        assertThat(augData.getOrderCount()).isEqualTo(25L); // 10 + 15
+        assertThat(augData.getRevenue()).isEqualByComparingTo("2500.00");
+        assertThat(augData.getOrderCount()).isEqualTo(25L);
 
-        // March totals
         SalesTrendDto.MonthlySalesData octData = r.getMonthlySales().stream()
                 .filter(m -> m.getYear() == 2025 && m.getMonth() == 10)
                 .findFirst().orElseThrow();
-        assertThat(octData.getRevenue()).isEqualByComparingTo("4000.00"); // 1800 + 2200
-        assertThat(octData.getOrderCount()).isEqualTo(40L); // 18 + 22
+        assertThat(octData.getRevenue()).isEqualByComparingTo("4000.00");
+        assertThat(octData.getOrderCount()).isEqualTo(40L);
 
-        // Verify trend calculation (compare last two months: Feb 2000, Mar 4000 => UP)
         assertThat(r.getTrendDirection()).isEqualTo("UP");
 
         verify(orderRepository, times(1)).getDailySalesTrends(start, end);

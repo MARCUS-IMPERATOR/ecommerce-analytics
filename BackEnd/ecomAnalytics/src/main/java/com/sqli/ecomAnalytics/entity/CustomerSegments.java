@@ -1,6 +1,7 @@
 package com.sqli.ecomAnalytics.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,12 +21,17 @@ public class CustomerSegments extends AbstractAudit {
 
     @Id
     @Column(name = "customer_id")
-    private Integer customerId;
+    private int customerId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     @MapsId
+    @JsonBackReference
     private Customers customer;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private Integer version;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "segment_label", nullable = false)

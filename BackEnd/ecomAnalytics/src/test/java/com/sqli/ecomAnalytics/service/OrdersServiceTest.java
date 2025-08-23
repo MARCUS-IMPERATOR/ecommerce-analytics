@@ -31,6 +31,7 @@ public class OrdersServiceTest {
     @Mock private ProductRepository productRepository;
     @Mock private CustomerRepository customerRepository;
     @Mock private OrderItemsRepository orderItemsRepository;
+    @Mock private CustomerSegmentsService customerSegmentsService;
     @InjectMocks
     private OrdersService ordersService;
 
@@ -38,6 +39,8 @@ public class OrdersServiceTest {
     void createOrder() {
         Customers customer = new Customers();
         customer.setCustomerId(1);
+        customer.setOrderCount(0);
+        customer.setTotalSpent(BigDecimal.ZERO);
 
         Products product = new Products();
         product.setProductId(10);
@@ -64,6 +67,7 @@ public class OrdersServiceTest {
         when(productRepository.findById(10)).thenReturn(Optional.of(product));
         when(orderRepository.save(any(Orders.class))).thenReturn(savedOrder);
         when(orderItemsRepository.save(any(OrderItems.class))).thenAnswer(i -> i.getArgument(0));
+
 
         Orders created = ordersService.createOrder(orderDto);
 

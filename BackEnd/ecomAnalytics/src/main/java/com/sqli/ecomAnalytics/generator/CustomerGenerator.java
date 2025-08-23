@@ -10,7 +10,6 @@ import jakarta.persistence.PersistenceException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,8 +38,6 @@ public class CustomerGenerator {
     private int generateAgeNormal() {
         int age;
         do {
-            // nextGaussian() -> mean 0, std dev 1
-            // Scale: mean + gaussian * stdDev
             age = (int) Math.round(MEAN_AGE + random.nextGaussian() * STD_DEV);
         } while (age < MIN_AGE || age > MAX_AGE);
         return age;

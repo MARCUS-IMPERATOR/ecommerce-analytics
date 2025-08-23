@@ -30,13 +30,15 @@ public class OrdersService {
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
     private final OrderItemsRepository orderItemsRepository;
+    private final CustomerSegmentsService customerSegmentsService;
 
     public OrdersService(OrderRepository orderRepository, ProductRepository productRepository,
-                         CustomerRepository customerRepository, OrderItemsRepository orderItemsRepository) {
+                         CustomerRepository customerRepository, OrderItemsRepository orderItemsRepository, CustomerSegmentsService customerSegmentsService) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.productRepository = productRepository;
         this.orderItemsRepository = orderItemsRepository;
+        this.customerSegmentsService = customerSegmentsService;
     }
 
 
@@ -44,6 +46,7 @@ public class OrdersService {
             @CacheEvict(value = "customerSpentCache", key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).customerSpentKey(#order.customerId)"),
             @CacheEvict(value = "customerOrderCountCache", key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).customerOrderCountKey(#order.customerId)")
     })
+
     @Transactional
     public Orders createOrder(OrderCreateDto order) {
         Customers customer = customerRepository.findById(order.getCustomerId())
@@ -66,7 +69,6 @@ public class OrdersService {
             productRepository.save(product);
         }
 
-
         Orders o = new Orders();
 
         Optional<LocalDateTime> lastOrder = Optional.ofNullable(customer.getLastOrderDate());
@@ -75,12 +77,19 @@ public class OrdersService {
             customer.setLastOrderDate(order.getOrderDate());
         }
 
+        customer.setTotalSpent(customer.getTotalSpent().add(totalAmount));
+        customer.setOrderCount(customer.getOrderCount() + 1);
+
+        customerRepository.save(customer);
+
         o.setCustomer(customer);
         o.setStatus(OrderStatus.PENDING);
         o.setTotalAmount(totalAmount);
         o.setOrderDate(order.getOrderDate());
 
         Orders savedOrder = orderRepository.save(o);
+
+        customerSegmentsService.initializeCustomerSegments(customer.getCustomerId());
 
         List<OrderItems> orderItemsList = new ArrayList<>();
 
@@ -100,6 +109,7 @@ public class OrdersService {
         }
 
         savedOrder.setOrderItems(orderItemsList);
+
         return savedOrder;
     }
 

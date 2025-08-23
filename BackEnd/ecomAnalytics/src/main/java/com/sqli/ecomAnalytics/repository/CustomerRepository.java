@@ -40,9 +40,6 @@ public interface CustomerRepository extends JpaRepository<Customers, Integer> {
     @Query("SELECT COUNT(c) FROM Customers c WHERE c.registrationDate BETWEEN :startDate AND :endDate")
     Long countCustomersRegisteredBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-
-    // Customer Analytics
-
     @Query("SELECT AVG(c.totalSpent) FROM Customers c")
     BigDecimal getAverageLifetimeValue();
 

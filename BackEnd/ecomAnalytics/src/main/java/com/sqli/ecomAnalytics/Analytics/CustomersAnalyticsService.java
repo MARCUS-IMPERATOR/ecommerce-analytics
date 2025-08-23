@@ -58,9 +58,9 @@ public class CustomersAnalyticsService {
     private List<CustomerAnalyticsDto.CustomerRegistrationTrendData> registrationTrends(LocalDateTime start, LocalDateTime end) {
         return customerRepository.getMonthlyRegistrationTrends(start, end).stream().map(
                 row -> new CustomerAnalyticsDto.CustomerRegistrationTrendData(
-                        ((Number) row[0]).intValue(),  // Changed from Double to Number for safety
-                        ((Number) row[1]).intValue(),  // Changed from Double to Number for safety
-                        ((Number) row[2]).longValue()  // Changed from Long to Number for safety
+                        ((Number) row[0]).intValue(),
+                        ((Number) row[1]).intValue(),
+                        ((Number) row[2]).longValue()
                 )).collect(Collectors.toList());
     }
 

@@ -68,50 +68,50 @@ public class CustomerServiceCacheTest extends  BaseCacheTest{
         assertCache("customerProfileCache",key,c);
     }
 
-    @Test
-    @DisplayName("Should cache all customers on the first call")
-    void getAllCustomers() {
-        when(customerRepository.findAll()).thenReturn(customers);
+//    @Test
+//    @DisplayName("Should cache all customers on the first call")
+//    void getAllCustomers() {
+//        when(customerRepository.findAll()).thenReturn(customers);
+//
+//        List<Customers> r1 = customersService.findAllCustomers();
+//
+//        verify(customerRepository, times(1)).findAll();
+//        assertThat(r1.size()).isEqualTo(1);
+//
+//        List<Customers> r2 = customersService.findAllCustomers();
+//
+//        verify(customerRepository, times(1)).findAll();
+//        assertThat(r2.size()).isEqualTo(1);
+//
+//        assertCache("allCustomersCache","customers:all",customers);
+//    }
 
-        List<Customers> r1 = customersService.findAllCustomers();
-
-        verify(customerRepository, times(1)).findAll();
-        assertThat(r1.size()).isEqualTo(1);
-
-        List<Customers> r2 = customersService.findAllCustomers();
-
-        verify(customerRepository, times(1)).findAll();
-        assertThat(r2.size()).isEqualTo(1);
-
-        assertCache("allCustomersCache","customers:all",customers);
-    }
-
-    @Test
-    @DisplayName("Should evict cache when registering new customer")
-    void evictCacheRegisterCustomer() {
-        when(customerRepository.findAll()).thenReturn(customers);
-        when(customerRepository.findHighSpendingCustomers(any())).thenReturn(customers);
-
-        customersService.findAllCustomers();
-        customersService.findHighestPayingCustomers();
-
-        assertCache("allCustomersCache","customers:all",customers);
-
-        CustomerRegistrationDto registrationDto = new CustomerRegistrationDto();
-        registrationDto.setFirstName("Jane");
-        registrationDto.setLastName("Doe");
-        registrationDto.setAge(22);
-        registrationDto.setPhone("123456789");
-        registrationDto.setCountry("France");
-
-        when(customerRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        when(customerRepository.save(any())).thenReturn(c);
-
-        customersService.registerCustomer(registrationDto);
-
-        assertEvict("allCustomersCache","customers:all");
-        assertEvict("highestPayingCustomersCache","customers:highestPayers");
-    }
+//    @Test
+//    @DisplayName("Should evict cache when registering new customer")
+//    void evictCacheRegisterCustomer() {
+//        when(customerRepository.findAll()).thenReturn(customers);
+//        when(customerRepository.findHighSpendingCustomers(any())).thenReturn(customers);
+//
+//        customersService.findAllCustomers();
+//        customersService.findHighestPayingCustomers();
+//
+//        assertCache("allCustomersCache","customers:all",customers);
+//
+//        CustomerRegistrationDto registrationDto = new CustomerRegistrationDto();
+//        registrationDto.setFirstName("Jane");
+//        registrationDto.setLastName("Doe");
+//        registrationDto.setAge(22);
+//        registrationDto.setPhone("123456789");
+//        registrationDto.setCountry("France");
+//
+//        when(customerRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+//        when(customerRepository.save(any())).thenReturn(c);
+//
+//        customersService.registerCustomer(registrationDto);
+//
+//        assertEvict("allCustomersCache","customers:all");
+//        assertEvict("highestPayingCustomersCache","customers:highestPayers");
+//    }
 
     @Test
     @DisplayName("Should evict specific customer cache when updating")

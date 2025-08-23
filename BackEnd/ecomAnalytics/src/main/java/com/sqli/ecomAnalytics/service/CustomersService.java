@@ -103,8 +103,8 @@ public class CustomersService {
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with ID: " + customerId + " not found"));
     }
 
-    @Cacheable(value = "allCustomersCache", key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).allCustomersKey()")
-    @Transactional(readOnly = true)
+//    @Cacheable(value = "allCustomersCache", key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).allCustomersKey()")
+//    @Transactional(readOnly = true)
     public List<Customers> findAllCustomers() {
         return customerRepository.findAll();
     }
@@ -166,8 +166,6 @@ public class CustomersService {
         double purchaseFrequency = (double) orderCount / yearsActive;
 
         long lifespan = ChronoUnit.YEARS.between(customer.getRegistrationDate(), LocalDateTime.now());
-
-        // LTV = Average Purchase Value * Purchase Frequency * Customer Lifespan
 
         return avgPurchaseValue.multiply(BigDecimal.valueOf(purchaseFrequency))
                 .multiply(BigDecimal.valueOf(lifespan));

@@ -41,7 +41,6 @@ public class KpiServiceTest {
 
         KpiDto result = kpiService.getKpi(start, end);
 
-        // Then
         assertThat(result.getTotalRevenue()).isEqualTo("100000.00");
         assertThat(result.getAverageOrderValue()).isEqualTo("75.50");
         assertThat(result.getTotalOrders()).isEqualTo(5000L);
