@@ -1,9 +1,6 @@
 package com.sqli.ecomAnalytics.controller;
 
-import com.sqli.ecomAnalytics.Analytics.CustomersAnalyticsService;
-import com.sqli.ecomAnalytics.Analytics.KpiService;
-import com.sqli.ecomAnalytics.Analytics.ProductsAnalyticsService;
-import com.sqli.ecomAnalytics.Analytics.SalesAnalyticsService;
+import com.sqli.ecomAnalytics.Analytics.*;
 import com.sqli.ecomAnalytics.configuration.SecurityConfig;
 import com.sqli.ecomAnalytics.dto.CustomerAnalyticsDto;
 import com.sqli.ecomAnalytics.dto.KpiDto;
@@ -52,13 +49,16 @@ public class AnalyticsControllerTest {
     @MockitoBean
     private SalesAnalyticsService salesAnalyticsService;
 
+    @MockitoBean
+    private RecommendationAnalyticsService recommendationAnalyticsService;
+
     private CustomerAnalyticsDto createMockCustomerAnalyticsDto() {
         CustomerAnalyticsDto dto = new CustomerAnalyticsDto();
         dto.setSegmentDistribution(Map.of("CHAMPION", 100L, "REGULAR", 200L));
         dto.setAverageCustomerLifetimeValue(new BigDecimal("1500.00"));
         dto.setChurnRate(new BigDecimal("5.00"));
         dto.setTopCustomers(List.of(
-                new CustomerAnalyticsDto.TopCustomerData(1, "John Doe", new BigDecimal("2500.00"), 15)
+                new CustomerAnalyticsDto.TopCustomerData(1, "John Doe", new BigDecimal("2500.00"), 15, "CHAMPION", new BigDecimal(100))
         ));
         dto.setRegistrationTrends(List.of(
                 new CustomerAnalyticsDto.CustomerRegistrationTrendData(2024, 1, 100L)
@@ -117,7 +117,10 @@ public class AnalyticsControllerTest {
         CustomerAnalyticsDto dto = createMockCustomerAnalyticsDto();
         when(customersAnalyticsService.getAnalytics(any(),any(),any())).thenReturn(dto);
 
-        mockMvc.perform(get("/api/analytics/customerAnalytics/start/2025-08-10T00:00:00/end/2025-09-22T23:59:59/threshold/2025-08-18T00:00:00"))
+        mockMvc.perform(get("/api/analytics/customerAnalytics")
+                        .param("start", "2025-08-10T00:00:00")
+                        .param("end", "2025-09-22T23:59:59")
+                        .param("threshold", "2025-08-18T00:00:00"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.segmentDistribution.CHAMPION").value(100))
                 .andExpect(jsonPath("$.averageCustomerLifetimeValue").value(1500.00))
@@ -131,7 +134,9 @@ public class AnalyticsControllerTest {
         KpiDto kpi = createMockKpiDto();
         when(kpiService.getKpi(any(), any())).thenReturn(kpi);
 
-        mockMvc.perform(get("/api/analytics/kpi/start/2025-08-10T00:00:00/end/2025-09-22T23:59:59"))
+        mockMvc.perform(get("/api/analytics/kpi")
+                        .param("start","2025-08-10T00:00:00")
+                        .param("end","2025-09-22T23:59:59"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalRevenue").value(50000.00))
                 .andExpect(jsonPath("$.totalCustomers").value(1000))
@@ -143,7 +148,10 @@ public class AnalyticsControllerTest {
         ProductPerformanceDto dto = createMockProductPerformanceDto();
         when(productsAnalyticsService.getProductPerformance(any(), any(), anyInt())).thenReturn(dto);
 
-        mockMvc.perform(get("/api/analytics/productsPerformance/start/2025-08-10T00:00:00/end/2025-09-22T23:59:59/threshold/10"))
+        mockMvc.perform(get("/api/analytics/productsPerformance")
+                        .param("start","2025-08-10T00:00:00")
+                        .param("end","2025-09-22T23:59:59")
+                        .param("threshold","10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.topSellingProducts").isArray())
                 .andExpect(jsonPath("$.topSellingProducts[0].productName").value("Laptop"))
@@ -160,7 +168,9 @@ public class AnalyticsControllerTest {
         SalesTrendDto dto = createMockSalesTrendDto();
         when(salesAnalyticsService.getsalesTrend(any(), any())).thenReturn(dto);
 
-        mockMvc.perform(get("/api/analytics/salesAnalytics/start/2025-08-10T00:00:00/end/2025-09-22T23:59:59/"))
+        mockMvc.perform(get("/api/analytics/salesAnalytics")
+                        .param("start","2025-08-10T00:00:00")
+                        .param("end","2025-09-22T23:59:59"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dailySales").isArray())
                 .andExpect(jsonPath("$.dailySales[0].date").value("2025-08-01"))

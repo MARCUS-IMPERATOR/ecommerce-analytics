@@ -36,6 +36,7 @@ public class CustomerAnalyticsTest {
         c.setCountry("Morocco");
         c.setTotalSpent(new BigDecimal("2500.00"));
         c.setOrderCount(15);
+        c.setRegistrationDate(LocalDateTime.of(2022, 1, 1, 0, 0));
         return c;
     }
 

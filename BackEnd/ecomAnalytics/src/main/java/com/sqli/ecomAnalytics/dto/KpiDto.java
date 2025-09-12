@@ -14,6 +14,7 @@ public class KpiDto {
     private BigDecimal totalRevenue;
     private Long totalOrders;
     private Long totalCustomers;
+    private Long totalProducts;
     private BigDecimal averageOrderValue;
     private Long newCustomersCount;
     private LocalDateTime periodStart;

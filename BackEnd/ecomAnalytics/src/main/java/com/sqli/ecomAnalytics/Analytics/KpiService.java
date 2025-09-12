@@ -3,6 +3,7 @@ package com.sqli.ecomAnalytics.Analytics;
 import com.sqli.ecomAnalytics.dto.KpiDto;
 import com.sqli.ecomAnalytics.repository.CustomerRepository;
 import com.sqli.ecomAnalytics.repository.OrderRepository;
+import com.sqli.ecomAnalytics.repository.ProductRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +16,12 @@ public class KpiService {
 
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
+    private final ProductRepository productRepository;
 
-    public KpiService(OrderRepository orderRepository, CustomerRepository customerRepository) {
+    public KpiService(OrderRepository orderRepository, CustomerRepository customerRepository, ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
+        this.productRepository = productRepository;
     }
 
     private BigDecimal getTotalRevenue(){
@@ -41,6 +44,10 @@ public class KpiService {
         return orderRepository.countAllOrders();
     }
 
+    private Long countProducts(){
+        return productRepository.countAllProducts();
+    }
+
     @Cacheable(value = "kpiCache",  key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).kpiKeys(#start,#end)")
     @Transactional(readOnly = true)
     public KpiDto getKpi(LocalDateTime start, LocalDateTime end) {
@@ -50,6 +57,7 @@ public class KpiService {
         kpi.setPeriodStart(start);
         kpi.setPeriodEnd(end);
         kpi.setTotalCustomers(countCustomers());
+        kpi.setTotalProducts(countProducts());
         kpi.setNewCustomersCount(newCustomers(start, end));
         kpi.setTotalOrders(countOrders());
 

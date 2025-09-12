@@ -26,6 +26,8 @@ public class CustomerAnalyticsDto {
         private String customerName;
         private BigDecimal totalSpent;
         private int orderCount;
+        private String segment;
+        private BigDecimal ltv;
     }
 
     @Data

@@ -57,8 +57,8 @@ class Segmentation:
                          END AS recency,
                     COUNT(o.order_id) AS frequency,
                     COALESCE(SUM(o.total_amount), 0) AS monetary
-                FROM customer c
-                LEFT JOIN "order" o ON c.customer_id = o.customer_id
+                FROM customers c
+                LEFT JOIN "orders" o ON c.customer_id = o.customer_id
                     AND o.status = 'DELIVERED'
                 GROUP BY c.customer_id
                 HAVING COUNT(o.order_id) > 0

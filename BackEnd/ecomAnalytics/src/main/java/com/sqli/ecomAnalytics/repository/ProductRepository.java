@@ -60,4 +60,7 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
             "GROUP BY p.productId, p.name, p.stockQuantity")
     List<Object[]> getInventoryTurnoverData(@Param("startDate") LocalDateTime startDate,
                                             @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(p) FROM Products p")
+    Long countAllProducts();
 }

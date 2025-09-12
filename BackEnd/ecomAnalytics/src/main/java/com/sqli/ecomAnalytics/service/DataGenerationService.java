@@ -25,16 +25,18 @@ public class DataGenerationService {
     private final DataGenerationProp prop;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
+    private final MLEventPublisher mlEventPublisher;
 
     private static final Logger logger = LoggerFactory.getLogger(DataGenerationService.class);
 
-    public DataGenerationService(CustomerGenerator customerGenerator, ProductGenerator productGenerator, OrderDataGenerator orderGenerator, DataGenerationProp prop, CustomerRepository customerRepository, CustomersService customersService, ProductsService productsService, ProductRepository productRepository) {
+    public DataGenerationService(CustomerGenerator customerGenerator, ProductGenerator productGenerator, OrderDataGenerator orderGenerator, DataGenerationProp prop, CustomerRepository customerRepository, CustomersService customersService, ProductsService productsService, ProductRepository productRepository, MLEventPublisher mlEventPublisher) {
         this.customerGenerator = customerGenerator;
         this.productGenerator = productGenerator;
         this.orderGenerator = orderGenerator;
         this.prop = prop;
         this.customerRepository = customerRepository;
         this.productRepository = productRepository;
+        this.mlEventPublisher = mlEventPublisher;
     }
 
     @PostConstruct
@@ -44,6 +46,7 @@ public class DataGenerationService {
         try {
             if (shouldSkipGeneration()) {
                 logger.info("Data already exists, skipping generation");
+                mlEventPublisher.enableEvents();
                 return;
             }
             generateCustomers();
@@ -52,8 +55,14 @@ public class DataGenerationService {
 
             logger.info("Data generation completed successfully");
 
+            mlEventPublisher.publishInitialData();
+
+            mlEventPublisher.enableEvents();
+            logger.info("ML events ENABLED for future operations");
+
         } catch (Exception e) {
             logger.error("Failed to generate data on startup", e);
+            mlEventPublisher.enableEvents();
         }
     }
 

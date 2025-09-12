@@ -4,6 +4,8 @@ import com.sqli.ecomAnalytics.dto.CustomerAnalyticsDto;
 import com.sqli.ecomAnalytics.entity.CustomerSegments;
 import com.sqli.ecomAnalytics.entity.Segments;
 import com.sqli.ecomAnalytics.repository.CustomerRepository;
+import com.sqli.ecomAnalytics.repository.CustomerSegmentsRepository;
+import com.sqli.ecomAnalytics.service.CustomersService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +21,11 @@ import java.util.stream.Collectors;
 public class CustomersAnalyticsService {
 
     private final CustomerRepository customerRepository;
+    private final CustomersService customersService;
 
-    public CustomersAnalyticsService(CustomerRepository customerRepository) {
+    public CustomersAnalyticsService(CustomerRepository customerRepository, CustomerSegmentsRepository customerSegmentsRepository, CustomersService customersService) {
         this.customerRepository = customerRepository;
+        this.customersService = customersService;
     }
 
     private Map<String, Long> getSegmentDistribution() {
@@ -47,7 +51,9 @@ public class CustomersAnalyticsService {
                         c.getCustomerId(),
                         c.getFirstName() + " " + c.getLastName(),
                         c.getTotalSpent(),
-                        c.getOrderCount()
+                        c.getOrderCount(),
+                        c.getCustomerSegment() != null ? c.getCustomerSegment().getSegmentLabel().name() : null,
+                        customersService.calculateLTV(c)
                 )).collect(Collectors.toList());
     }
 

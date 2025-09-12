@@ -1,0 +1,21 @@
+export const COLORS = {
+    bar : 'rgba(74,93,110,0.43)',
+    green : '#399918',
+    lightGreen : '#ECFFE6',
+    textGreen : '#27AE60',
+    textRed : '#EB5757',
+    orange : '#FF9B2F',
+    lightOrange : '#FFF7E6',
+    purple : '#573391',
+    lightPurple : '#FBE6FF',
+    blue : '#466C95',
+    lightBlue : '#EAE6FF',
+    deepGreen : '#008004',
+    lightDeepGreen : '#94F3B4',
+    deepBlue : '#0D0080',
+    lightDeepBlue : '#9494F3',
+    deepYellow : '#7C8000',
+    lightDeepYellow : '#F3E594',
+    gold : '#ECD000',
+    lightGold : '#E8E5CA'
+}

@@ -1,29 +1,35 @@
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from app.config.settings import settings
-from app.config.database import init_db
-from app.models.database import Customer
+import logging
+from events.ml_event_consumer import MLEventConsumer
+from config.database import SessionLocal
 
-app = FastAPI(
-    title=settings.app_name
-)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
-@app.get("/health")
-def health():
-    return {"status": "ok", "service":settings.app_name}
+def main():
+    kafka_config = {'bootstrap_servers': ['localhost:9092'], 'group_id': 'ml-processing-group'}
+    consumer = MLEventConsumer(db_session_factory=SessionLocal, kafka_config=kafka_config)
 
-@app.get("/test-db")
-def test_db(db: Session = Depends(init_db)):
+    success = False
     try:
-        count = db.query(Customer).count()
-        return {"status": "ok", "count": count}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+        logger.info("Starting ML Event Consumer (main)...")
+        consumer.start_consuming()
+        success = True
+    except KeyboardInterrupt:
+        logger.info("KeyboardInterrupt received — shutting down consumer...")
+        consumer.stop_consuming()
+    except Exception:
+        logger.exception("Consumer failed with an unexpected exception")
+    finally:
+        try:
+            consumer.stop_consuming()
+        except Exception:
+            pass
+
+        if success:
+            print("MAIN RAN CORRECTLY")
+            logger.info("Main finished successfully")
+        else:
+            logger.info("Main exited (interrupted or failed)")
+
+if __name__ == "__main__":
+    main()

@@ -17,4 +17,18 @@ public interface ProductRecommendationsRepository extends JpaRepository<ProductR
 
     @Query("SELECT pr FROM ProductRecommendations pr WHERE pr.customerId = :customerId AND pr.score >= :minScore")
     List<ProductRecommendations> findHighScoreRecommendations(@Param("customerId") Integer customerId, @Param("minScore") BigDecimal minScore);
+
+    @Query("SELECT pr.productId, pr.product.name, COUNT(pr), AVG(pr.score) " +
+            "FROM ProductRecommendations pr " +
+            "GROUP BY pr.productId, pr.product.name " +
+            "ORDER BY COUNT(pr) DESC")
+    List<Object[]> findTopRecommendedProducts();
+
+    @Query("SELECT COUNT(DISTINCT pr.customerId) FROM ProductRecommendations pr")
+    long countCustomersWithRecommendations();
+
+    @Query("SELECT AVG(sub.count) " +
+            "FROM (SELECT COUNT(pr) as count FROM ProductRecommendations pr GROUP BY pr.customerId) sub")
+    double averageRecommendationsPerCustomer();
+
 }

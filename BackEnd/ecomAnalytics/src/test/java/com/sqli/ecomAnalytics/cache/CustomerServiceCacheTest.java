@@ -1,6 +1,5 @@
 package com.sqli.ecomAnalytics.cache;
 
-import com.sqli.ecomAnalytics.dto.CustomerRegistrationDto;
 import com.sqli.ecomAnalytics.dto.CustomerUpdateDto;
 import com.sqli.ecomAnalytics.entity.Customers;
 import com.sqli.ecomAnalytics.repository.CustomerRepository;

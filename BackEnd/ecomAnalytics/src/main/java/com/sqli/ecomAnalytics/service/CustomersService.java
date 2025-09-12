@@ -25,9 +25,11 @@ import java.util.Random;
 @Service
 public class CustomersService {
     private final CustomerRepository customerRepository;
+    private final MLEventPublisher mlEventPublisher;
 
-    public CustomersService(CustomerRepository customerRepository) {
+    public CustomersService(CustomerRepository customerRepository, MLEventPublisher mlEventPublisher) {
         this.customerRepository = customerRepository;
+        this.mlEventPublisher = mlEventPublisher;
     }
 
     @Caching(evict = {
@@ -58,7 +60,10 @@ public class CustomersService {
         c.setTotalSpent(BigDecimal.ZERO);
         c.setRegistrationDate(customer.getRegisterDate());
 
-        return customerRepository.save(c);
+        Customers savedCustomer = customerRepository.save(c);
+
+        mlEventPublisher.publishCustomerCreated(savedCustomer.getCustomerId());
+        return savedCustomer;
     }
 
     @Caching(evict = {
@@ -79,7 +84,12 @@ public class CustomersService {
         c.setAge(c.getAge());
         c.setEmail(customer.getEmail());
         c.setPhone(customer.getPhone());
-        return customerRepository.save(c);
+
+        Customers updatedCustomer = customerRepository.save(c);
+
+        mlEventPublisher.publishCustomerUpdated(updatedCustomer.getCustomerId());
+
+        return updatedCustomer;
     }
 
     private String generateCustomerCode(String firstName, String lastName, LocalDateTime registrationDate) {
@@ -163,9 +173,13 @@ public class CustomersService {
         BigDecimal avgPurchaseValue = totalSpent.divide(BigDecimal.valueOf(orderCount), 2, BigDecimal.ROUND_HALF_UP);
 
         long yearsActive = ChronoUnit.YEARS.between(customer.getRegistrationDate(), LocalDateTime.now());
+        if (yearsActive == 0) {
+            yearsActive = 1;
+        }
+
         double purchaseFrequency = (double) orderCount / yearsActive;
 
-        long lifespan = ChronoUnit.YEARS.between(customer.getRegistrationDate(), LocalDateTime.now());
+        long lifespan = yearsActive;
 
         return avgPurchaseValue.multiply(BigDecimal.valueOf(purchaseFrequency))
                 .multiply(BigDecimal.valueOf(lifespan));

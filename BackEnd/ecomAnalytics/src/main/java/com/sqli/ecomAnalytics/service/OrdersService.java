@@ -31,14 +31,16 @@ public class OrdersService {
     private final ProductRepository productRepository;
     private final OrderItemsRepository orderItemsRepository;
     private final CustomerSegmentsService customerSegmentsService;
+    private final MLEventPublisher mlEventPublisher;
 
     public OrdersService(OrderRepository orderRepository, ProductRepository productRepository,
-                         CustomerRepository customerRepository, OrderItemsRepository orderItemsRepository, CustomerSegmentsService customerSegmentsService) {
+                         CustomerRepository customerRepository, OrderItemsRepository orderItemsRepository, CustomerSegmentsService customerSegmentsService, MLEventPublisher mlEventPublisher) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.productRepository = productRepository;
         this.orderItemsRepository = orderItemsRepository;
         this.customerSegmentsService = customerSegmentsService;
+        this.mlEventPublisher = mlEventPublisher;
     }
 
 
@@ -109,6 +111,8 @@ public class OrdersService {
         }
 
         savedOrder.setOrderItems(orderItemsList);
+
+        mlEventPublisher.publishOrderCreated(savedOrder.getCustomer().getCustomerId(), savedOrder.getOrderId());
 
         return savedOrder;
     }

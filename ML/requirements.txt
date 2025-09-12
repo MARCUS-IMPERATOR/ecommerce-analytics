@@ -1,3 +1,6 @@
+seaborn
+matplotlib
+pydantic-settings
 fastapi==0.116.1
 uvicorn==0.35.0
 sqlalchemy==2.0.43

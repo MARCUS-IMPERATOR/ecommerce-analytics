@@ -28,10 +28,16 @@ import static org.mockito.Mockito.*;
 public class OrdersServiceTest {
     @Mock
     private OrderRepository orderRepository;
-    @Mock private ProductRepository productRepository;
-    @Mock private CustomerRepository customerRepository;
-    @Mock private OrderItemsRepository orderItemsRepository;
-    @Mock private CustomerSegmentsService customerSegmentsService;
+    @Mock
+    private ProductRepository productRepository;
+    @Mock
+    private CustomerRepository customerRepository;
+    @Mock
+    private OrderItemsRepository orderItemsRepository;
+    @Mock
+    private MLEventPublisher mlEventPublisher;
+    @Mock
+    private CustomerSegmentsService customerSegmentsService;
     @InjectMocks
     private OrdersService ordersService;
 
@@ -70,6 +76,8 @@ public class OrdersServiceTest {
 
 
         Orders created = ordersService.createOrder(orderDto);
+
+//        doNothing().when(mlEventPublisher).publishOrderCreated(anyInt(), anyInt());
 
         assertEquals(OrderStatus.PENDING, created.getStatus());
         assertEquals(BigDecimal.valueOf(100), created.getTotalAmount());

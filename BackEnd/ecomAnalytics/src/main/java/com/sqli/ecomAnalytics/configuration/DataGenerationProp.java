@@ -24,7 +24,7 @@ public class DataGenerationProp {
     @Setter
     public static class Customers {
         @Min(1)
-        private int count = 100;
+        private int count = 30;
         private GeogDist geogDist = new GeogDist();
 
         @Getter
@@ -47,18 +47,18 @@ public class DataGenerationProp {
     @Setter
     public static class Products {
         @Min(1)
-        private int count = 50;
+        private int count = 60;
         private CategoryDistribution categoryDistribution = new CategoryDistribution();
 
         @Getter
         @Setter
         public static class CategoryDistribution {
-            private int smartphones = 300;
-            private int laptops = 250;
-            private int tablets = 150;
-            private int gaming = 150;
-            private int accessories = 100;
-            private int others = 50;
+            private int smartphones = 10;
+            private int laptops = 10;
+            private int tablets = 10;
+            private int gaming = 10;
+            private int accessories = 10;
+            private int others = 10;
         }
     }
 
@@ -69,7 +69,7 @@ public class DataGenerationProp {
         @Min(1)
         private int months = 24;
         @Min(1)
-        private int dailyVolume = 5;
+        private int dailyVolume = 4;
     }
 }
 

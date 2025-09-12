@@ -2,6 +2,7 @@ package com.sqli.ecomAnalytics.analytics;
 
 import com.sqli.ecomAnalytics.Analytics.ProductsAnalyticsService;
 import com.sqli.ecomAnalytics.dto.ProductPerformanceDto;
+import com.sqli.ecomAnalytics.entity.ProductCategory;
 import com.sqli.ecomAnalytics.entity.Products;
 import com.sqli.ecomAnalytics.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ public class ProductAnalyticsServiceTest {
         when(productRepository.getProductPerformanceByRevenue(start, end)).thenReturn(topProducts);
 
 
-        Object[] categoryData = new Object[] {"Electronics", 100L, new BigDecimal("75000.00"), 5};
+        Object[] categoryData = new Object[] {ProductCategory.LAPTOPS, 100L, new BigDecimal("75000.00"), 5};
         List<Object[]> categoryList = Collections.singletonList(categoryData);
         when(productRepository.getCategoryPerformance(start, end)).thenReturn(categoryList);
 
@@ -68,7 +69,7 @@ public class ProductAnalyticsServiceTest {
         assertThat(result.getTopSellingProducts().get(0).getRevenue()).isEqualByComparingTo(new BigDecimal("49999.50"));
 
         assertThat(result.getCategoryPerformance()).hasSize(1);
-        assertThat(result.getCategoryPerformance().get(0).getCategory()).isEqualTo("Electronics");
+        assertThat(result.getCategoryPerformance().get(0).getCategory()).isEqualTo("LAPTOPS");
         assertThat(result.getCategoryPerformance().get(0).getTotalQuantitySold()).isEqualTo(100L);
 
         assertThat(result.getInventoryAnalysis()).hasSize(1);

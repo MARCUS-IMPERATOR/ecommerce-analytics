@@ -19,12 +19,17 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class CustomersServiceTest {
     @Mock
     private CustomerRepository customerRepository;
+    @Mock
+    private MLEventPublisher mlEventPublisher;
+
     @InjectMocks
     private CustomersService customersService;
 
@@ -51,6 +56,8 @@ public class CustomersServiceTest {
 
         Customers saved = customersService.registerCustomer(dto);
 
+        doNothing().when(mlEventPublisher).publishCustomerCreated(anyInt());
+
         assertEquals(dto.getEmail(), saved.getEmail());
         assertTrue(saved.getCustomerCode().startsWith("CUSTJOHDOE"));
     }
@@ -61,6 +68,7 @@ public class CustomersServiceTest {
         CustomerUpdateDto dto = new CustomerUpdateDto("Jane", "Smith", 12,"Morocco","new@example.com", "0000000");
         when(customerRepository.findById(1)).thenReturn(Optional.of(c));
         when(customerRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        doNothing().when(mlEventPublisher).publishCustomerUpdated(anyInt());
 
         Customers updated = customersService.updateCustomer(1, dto);
 

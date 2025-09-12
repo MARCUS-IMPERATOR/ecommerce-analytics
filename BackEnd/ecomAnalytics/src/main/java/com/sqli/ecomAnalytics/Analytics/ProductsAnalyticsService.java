@@ -1,6 +1,7 @@
 package com.sqli.ecomAnalytics.Analytics;
 
 import com.sqli.ecomAnalytics.dto.ProductPerformanceDto;
+import com.sqli.ecomAnalytics.entity.ProductCategory;
 import com.sqli.ecomAnalytics.entity.Products;
 import com.sqli.ecomAnalytics.repository.ProductRepository;
 import org.springframework.cache.annotation.Cacheable;
@@ -43,7 +44,8 @@ public class ProductsAnalyticsService {
         List<Object[]> results = productRepository.getCategoryPerformance(startDate, endDate);
 
         return results.stream().map(record -> {
-            String category = (String) record[0];
+            ProductCategory categEnum = (ProductCategory) record[0];
+            String category = categEnum.name();
             Long totalQuantitySold = ((Number) record[1]).longValue();
             BigDecimal totalRevenue = (BigDecimal) record[2];
             int productCount = ((Number) record[3]).intValue();

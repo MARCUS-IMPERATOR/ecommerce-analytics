@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CustomerSegmentsRepository extends JpaRepository<CustomerSegments, Integer> {
     List<CustomerSegments> findBySegmentLabel(Segments segmentLabel);
+    Segments findByCustomerId(Integer customerId);
 }

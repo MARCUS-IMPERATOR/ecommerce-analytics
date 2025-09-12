@@ -2,6 +2,7 @@ package com.sqli.ecomAnalytics.cache;
 
 import com.sqli.ecomAnalytics.Analytics.ProductsAnalyticsService;
 import com.sqli.ecomAnalytics.dto.ProductPerformanceDto;
+import com.sqli.ecomAnalytics.entity.ProductCategory;
 import com.sqli.ecomAnalytics.entity.Products;
 import com.sqli.ecomAnalytics.repository.ProductRepository;
 import com.sqli.ecomAnalytics.util.RedisCacheKeys;
@@ -37,17 +38,17 @@ public class ProductsAnalyticsServiceCache extends BaseCacheTest {
         Object[] topProduct = new Object[]{product, 50L, new BigDecimal("50000.00")};
         when(productRepository.getProductPerformanceByRevenue(start, end)).thenReturn(Collections.singletonList(topProduct));
 
-        Object[] categoryPerf = new Object[]{"Electronics", 100L, new BigDecimal("75000.00"), 5};
+        Object[] categoryPerf = new Object[]{ProductCategory.LAPTOPS, 100L, new BigDecimal("75000.00"), 5};
         when(productRepository.getCategoryPerformance(start, end))
                 .thenReturn(Collections.singletonList(categoryPerf));
 
-        Object[] inventoryData = new Object[]{1, "Laptop", 25, 50L};
+        Object[] inventoryData = new Object[]{1, "Laptop1", 25, 50L};
         when(productRepository.getInventoryTurnoverData(start, end))
                 .thenReturn(Collections.singletonList(inventoryData));
 
         Products lowStockProduct = new Products();
         lowStockProduct.setProductId(2);
-        lowStockProduct.setName("Mouse");
+        lowStockProduct.setName("Laptop2");
         when(productRepository.findLowStock(lowStockThreshold))
                 .thenReturn(Collections.singletonList(lowStockProduct));
 

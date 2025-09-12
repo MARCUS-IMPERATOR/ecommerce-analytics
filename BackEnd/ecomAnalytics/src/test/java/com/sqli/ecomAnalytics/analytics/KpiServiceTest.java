@@ -4,6 +4,7 @@ import com.sqli.ecomAnalytics.Analytics.KpiService;
 import com.sqli.ecomAnalytics.dto.KpiDto;
 import com.sqli.ecomAnalytics.repository.CustomerRepository;
 import com.sqli.ecomAnalytics.repository.OrderRepository;
+import com.sqli.ecomAnalytics.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,9 @@ public class KpiServiceTest {
 
     @Mock
     private CustomerRepository customerRepository;
+
+    @Mock
+    private ProductRepository  productRepository;
 
     @InjectMocks
     private KpiService kpiService;
