@@ -8,9 +8,9 @@ on:
 
 env:
   REGISTRY: docker.io
-  BACKEND_IMAGE_NAME: ${{ github.repository }}-backend
-  FRONTEND_IMAGE_NAME: ${{ github.repository }}-frontend
-  ML_IMAGE_NAME: ${{ github.repository }}-ml-service
+  BACKEND_IMAGE_NAME: ecommerce-analytics-backend
+  FRONTEND_IMAGE_NAME: ecommerce-analytics-frontend
+  ML_IMAGE_NAME: ecommerce-analytics-ml-service
 
 jobs:
   test:
