@@ -1,6 +1,11 @@
+prometheus-fastapi-instrumentator
+prometheus-client
+opentelemetry-instrumentation-openai
 seaborn
 matplotlib
 pydantic-settings
+kafka-python
+psycopg2
 fastapi==0.116.1
 uvicorn==0.35.0
 sqlalchemy==2.0.43

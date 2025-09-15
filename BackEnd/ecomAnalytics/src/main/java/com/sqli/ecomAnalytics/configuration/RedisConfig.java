@@ -25,13 +25,13 @@ import java.util.Map;
 @EnableCaching
 public class RedisConfig {
 
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
-        redisConfig.setHostName("localhost");
-        redisConfig.setPort(6379);
-        return new LettuceConnectionFactory(redisConfig);
-    }
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory() {
+//        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
+//        redisConfig.setHostName("localhost");
+//        redisConfig.setPort(6379);
+//        return new LettuceConnectionFactory(redisConfig);
+//    }
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
