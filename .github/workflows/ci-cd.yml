@@ -36,7 +36,7 @@ jobs:
     
     - name: List files in repo
       run: ls -R
-      
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -49,12 +49,12 @@ jobs:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
-
+    
     - name: Download OpenTelemetry agent
+      working-directory: BackEnd/ecomAnalytics
       run: |
-        cd ecommerce-analytics/BackEnd/ecomAnalytics
         curl -L -o opentelemetry-javaagent.jar \
-          "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
+        "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
 
     - name: Run backend tests
       run: |
