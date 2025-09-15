@@ -14,6 +14,7 @@ env:
 
 jobs:
   test:
+    name: Run tests (integration)
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -31,167 +32,185 @@ jobs:
           --health-retries 5
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Debug repository structure
-      run: |
-        echo "=== REPOSITORY ROOT STRUCTURE ==="
-        ls -la
-        echo ""
-        echo "=== LOOKING FOR BACKEND DIRECTORIES ==="
-        find . -name "*ackend*" -type d | head -10
-        echo ""
-        echo "=== LOOKING FOR FRONTEND DIRECTORIES ==="
-        find . -name "*ront*" -type d | head -10
-        echo ""
-        echo "=== LOOKING FOR ML DIRECTORIES ==="
-        find . -name "ML" -type d
-        echo ""
-        echo "=== ALL DIRECTORIES IN ROOT ==="
-        find . -maxdepth 2 -type d | sort
+      - name: Debug repository structure (optional)
+        run: |
+          echo "=== ROOT ==="
+          ls -la
+          echo ""
+          echo "=== BACKEND ==="
+          find . -iname "*ackend*" -maxdepth 3 -type d | head -10
+          echo ""
+          echo "=== FRONTEND ==="
+          find . -iname "*ront*" -maxdepth 3 -type d | head -10
+          echo ""
+          echo "=== ML ==="
+          find . -iname "ml" -maxdepth 3 -type d || true
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
+      - name: Setup Java (Temurin 21)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-    - name: Cache Maven dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
 
-    - name: Download OpenTelemetry agent
-      run: |
-        cd BackEnd/ecomAnalytics/
-        curl -L -o opentelemetry-javaagent.jar \
-          "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
+      - name: Download OpenTelemetry agent
+        run: |
+          if [ -d "BackEnd/ecomAnalytics" ]; then
+            cd BackEnd/ecomAnalytics
+            curl -L -o opentelemetry-javaagent.jar \
+              "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
+          else
+            echo "Backend path not found; skipping otel download."
+          fi
 
-    # - name: Run backend tests
-    #   run: |
-    #     cd Backend/ecomAnalytics/
-    #     mvn clean test
-    #   env:
-    #     SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ecom_analytics_test
-    #     SPRING_DATASOURCE_USERNAME: user
-    #     SPRING_DATASOURCE_PASSWORD: pass
+      # - name: Run backend tests
+      #   run: |
+      #     cd BackEnd/ecomAnalytics
+      #     mvn clean test
+      #   env:
+      #     SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ecom_analytics_test
+      #     SPRING_DATASOURCE_USERNAME: user
+      #     SPRING_DATASOURCE_PASSWORD: pass
 
-  build-and-push:
+  build-backend:
+    name: Build & push backend image
     needs: test
-    runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Login to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: |
-          ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}
-          ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}
-          ${{ env.REGISTRY }}/${{ env.ML_IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable={{is_default_branch}}
+      - name: Setup Java (Temurin 21)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-    - name: Set up JDK 21 for backend build
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
 
-    - name: Cache Maven dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+      - name: Build Spring Boot package
+        run: |
+          cd BackEnd/ecomAnalytics
+          mvn clean package -DskipTests
 
-    - name: Download OpenTelemetry agent
-      run: |
-        cd BackEnd/ecomAnalytics/
-        curl -L -o opentelemetry-javaagent.jar \
-          "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
+      - name: Build & push backend image
+        id: docker_build_backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./BackEnd/ecomAnalytics
+          file: ./BackEnd/ecomAnalytics/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-    - name: Build Spring Boot application
-      run: |
-        cd BackEnd/ecomAnalytics/
-        mvn clean package -DskipTests
+  build-frontend:
+    name: Build & push frontend image
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
 
-    - name: Build and push backend image to docker
-      uses: docker/build-push-action@v5
-      with:
-        context: ./BackEnd/ecomAnalytics
-        file: ./BackEnd/ecomAnalytics/Dockerfile
-        push: true
-        tags: |
-          ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:latest
-          ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Build and push frontend image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./FrontEnd/ecommerce-analytics-dashboard/
-        file: ./FrontEnd/ecommerce-analytics-dashboard/DockerFile
-        push: true
-        tags: |
-          ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
-          ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Build and push ML service image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./ML
-        file: ./ML/Dockerfile
-        push: true
-        tags: |
-          ${{ env.REGISTRY }}/${{ env.ML_IMAGE_NAME }}:latest
-          ${{ env.REGISTRY }}/${{ env.ML_IMAGE_NAME }}:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Image digest
-      run: |
-        echo "Backend image digest: ${{ steps.docker_build_backend.outputs.digest }}"
-        echo "Frontend image digest: ${{ steps.docker_build_frontend.outputs.digest }}"
-        echo "ML service image digest: ${{ steps.docker_build_ml.outputs.digest }}"
+      - name: Build & push frontend image
+        id: docker_build_frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./FrontEnd/ecommerce-analytics-dashboard
+          file: ./FrontEnd/ecommerce-analytics-dashboard/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-ml:
+    name: Build & push ML service image
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build & push ML image
+        id: docker_build_ml
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ML
+          file: ./ML/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.ML_IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.ML_IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy-notification:
-    needs: build-and-push
+    name: Deploy notification (main branch)
+    needs: [ build-backend, build-frontend, build-ml ]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
     steps:
-    - name: Deployment notification
-      run: |
-        echo "Images successfully built and pushed to DockerHub!"
-        echo "Backend: marcusimperi/${{ env.BACKEND_IMAGE_NAME }}:latest"
-        echo "Frontend: marcusimperi/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
-        echo "ML Service: marcusimperi/${{ env.ML_IMAGE_NAME }}:latest"
-        echo ""
-        echo "Tagged versions:"
-        echo "   - latest (main branch)"
-        echo "   - ${{ github.sha }} (commit hash)"
-        echo ""
-        echo "Ready for deployment!"
+      - name: Notify about built images
+        run: |
+          echo "Images successfully built and pushed to DockerHub!"
+          echo "Backend: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:latest"
+          echo "Frontend: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:latest"
+          echo "ML Service: ${{ env.REGISTRY }}/${{ env.ML_IMAGE_NAME }}:latest"
+          echo ""
+          echo "Tagged versions:"
+          echo "  - latest (main branch)"
+          echo "  - ${{ github.sha }} (commit hash)"
+          echo ""
+          echo "Ready for deployment!"
