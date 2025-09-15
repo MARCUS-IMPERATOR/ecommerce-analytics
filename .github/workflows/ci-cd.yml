@@ -51,7 +51,7 @@ jobs:
         echo "=== ALL DIRECTORIES IN ROOT ==="
         find . -maxdepth 2 -type d | sort
 
-    - name: Set up JDK 21
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '21'
@@ -185,13 +185,13 @@ jobs:
     steps:
     - name: Deployment notification
       run: |
-        echo " Images successfully built and pushed to DockerHub!"
-        echo " Backend: docker.io/${{ env.BACKEND_IMAGE_NAME }}:latest"
-        echo " Frontend: docker.io/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
-        echo " ML Service: docker.io/${{ env.ML_IMAGE_NAME }}:latest"
+        echo "✅ Images successfully built and pushed to DockerHub!"
+        echo "🐳 Backend: docker.io/${{ env.BACKEND_IMAGE_NAME }}:latest"
+        echo "🐳 Frontend: docker.io/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
+        echo "🐳 ML Service: docker.io/${{ env.ML_IMAGE_NAME }}:latest"
         echo ""
-        echo " Tagged versions:"
+        echo "📦 Tagged versions:"
         echo "   - latest (main branch)"
         echo "   - ${{ github.sha }} (commit hash)"
         echo ""
-        echo " Ready for deployment!"
+        echo "🚀 Ready for deployment!"
