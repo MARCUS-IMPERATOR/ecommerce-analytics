@@ -126,20 +126,20 @@ jobs:
 
     - name: Download OpenTelemetry agent
       run: |
-        cd Backend/ecomAnalytics/
+        cd BackEnd/ecomAnalytics/
         curl -L -o opentelemetry-javaagent.jar \
           "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
 
     - name: Build Spring Boot application
       run: |
-        cd Backend/ecomAnalytics/
+        cd BackEnd/ecomAnalytics/
         mvn clean package -DskipTests
 
     - name: Build and push backend image
       uses: docker/build-push-action@v5
       with:
-        context: ./Backend/ecomAnalytics
-        file: ./Backend/ecomAnalytics/Dockerfile
+        context: ./BackEnd/ecomAnalytics
+        file: ./BackEnd/ecomAnalytics/Dockerfile
         push: true
         tags: |
           ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:latest
