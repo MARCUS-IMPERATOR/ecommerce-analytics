@@ -195,8 +195,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy-notification:
-    name: Deploy notification (main branch)
+  deploy:
+    name: Deploy 
     needs: [ build-backend, build-frontend, build-ml ]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
