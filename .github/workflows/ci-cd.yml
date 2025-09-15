@@ -2,15 +2,15 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main ]
 
 env:
   REGISTRY: docker.io
-  BACKEND_IMAGE_NAME: ecommerce-analytics-backend
-  FRONTEND_IMAGE_NAME: ecommerce-analytics-frontend
-  ML_IMAGE_NAME: ecommerce-analytics-ml-service
+  BACKEND_IMAGE_NAME: ${{ github.repository }}-backend
+  FRONTEND_IMAGE_NAME: ${{ github.repository }}-frontend
+  ML_IMAGE_NAME: ${{ github.repository }}-ml-service
 
 jobs:
   test:
@@ -33,9 +33,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
-    - name: List files in repo
-      run: ls -R
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -49,16 +46,16 @@ jobs:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
-    
+
     - name: Download OpenTelemetry agent
-      working-directory: BackEnd/ecomAnalytics
       run: |
+        cd Backend/ecomAnalytics/
         curl -L -o opentelemetry-javaagent.jar \
-        "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
+          "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
 
     - name: Run backend tests
       run: |
-        cd ecommerce-analytics/BackEnd/ecomAnalytics
+        cd Backend/ecomAnalytics/
         mvn clean test
       env:
         SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ecom_analytics_test
@@ -171,13 +168,13 @@ jobs:
     steps:
     - name: Deployment notification
       run: |
-        echo "✅ Images successfully built and pushed to DockerHub!"
-        echo "🐳 Backend: docker.io/${{ env.BACKEND_IMAGE_NAME }}:latest"
-        echo "🐳 Frontend: docker.io/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
-        echo "🐳 ML Service: docker.io/${{ env.ML_IMAGE_NAME }}:latest"
+        echo " Images successfully built and pushed to DockerHub!"
+        echo " Backend: docker.io/${{ env.BACKEND_IMAGE_NAME }}:latest"
+        echo " Frontend: docker.io/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
+        echo " ML Service: docker.io/${{ env.ML_IMAGE_NAME }}:latest"
         echo ""
-        echo "📦 Tagged versions:"
+        echo " Tagged versions:"
         echo "   - latest (main branch)"
         echo "   - ${{ github.sha }} (commit hash)"
         echo ""
-        echo "🚀 Ready for deployment!"
+        echo " Ready for deployment!"
