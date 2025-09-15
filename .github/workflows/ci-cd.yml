@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  REGISTRY: docker.io
+  REGISTRY: marcusimperi
   BACKEND_IMAGE_NAME: ecommerce-analytics-backend
   FRONTEND_IMAGE_NAME: ecommerce-analytics-frontend
   ML_IMAGE_NAME: ecommerce-analytics-ml-service
@@ -186,9 +186,9 @@ jobs:
     - name: Deployment notification
       run: |
         echo "Images successfully built and pushed to DockerHub!"
-        echo "Backend: docker.io/${{ env.BACKEND_IMAGE_NAME }}:latest"
-        echo "Frontend: docker.io/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
-        echo "ML Service: docker.io/${{ env.ML_IMAGE_NAME }}:latest"
+        echo "Backend: marcusimperi/${{ env.BACKEND_IMAGE_NAME }}:latest"
+        echo "Frontend: marcusimperi/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
+        echo "ML Service: marcusimperi/${{ env.ML_IMAGE_NAME }}:latest"
         echo ""
         echo "Tagged versions:"
         echo "   - latest (main branch)"
