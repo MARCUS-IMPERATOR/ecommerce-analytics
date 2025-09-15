@@ -66,7 +66,7 @@ jobs:
 
     - name: Download OpenTelemetry agent
       run: |
-        cd Backend/ecomAnalytics/
+        cd BackEnd/ecomAnalytics/
         curl -L -o opentelemetry-javaagent.jar \
           "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
 
@@ -185,13 +185,13 @@ jobs:
     steps:
     - name: Deployment notification
       run: |
-        echo "✅ Images successfully built and pushed to DockerHub!"
-        echo "🐳 Backend: docker.io/${{ env.BACKEND_IMAGE_NAME }}:latest"
-        echo "🐳 Frontend: docker.io/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
-        echo "🐳 ML Service: docker.io/${{ env.ML_IMAGE_NAME }}:latest"
+        echo "Images successfully built and pushed to DockerHub!"
+        echo "Backend: docker.io/${{ env.BACKEND_IMAGE_NAME }}:latest"
+        echo "Frontend: docker.io/${{ env.FRONTEND_IMAGE_NAME }}:latest" 
+        echo "ML Service: docker.io/${{ env.ML_IMAGE_NAME }}:latest"
         echo ""
-        echo "📦 Tagged versions:"
+        echo "Tagged versions:"
         echo "   - latest (main branch)"
         echo "   - ${{ github.sha }} (commit hash)"
         echo ""
-        echo "🚀 Ready for deployment!"
+        echo "Ready for deployment!"
