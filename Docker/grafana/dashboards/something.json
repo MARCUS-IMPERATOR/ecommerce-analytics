@@ -28,34 +28,6 @@
       },
       {
         "id": 2,
-        "title": "Response Time Percentiles",
-        "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.50, sum(rate(http_server_requests_seconds_bucket[5m])) by (le))",
-            "legendFormat": "P50",
-            "refId": "A"
-          },
-          {
-            "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[5m])) by (le))",
-            "legendFormat": "P95",
-            "refId": "B"
-          },
-          {
-            "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket[5m])) by (le))",
-            "legendFormat": "P99",
-            "refId": "C"
-          }
-        ],
-        "yAxes": [
-          {"label": "seconds", "min": 0},
-          {"show": false}
-        ],
-        "legend": {"show": true, "values": true, "current": true}
-      },
-      {
-        "id": 3,
         "title": "Error Rate",
         "type": "stat",
         "gridPos": {"h": 8, "w": 6, "x": 0, "y": 8},
@@ -81,32 +53,7 @@
         }
       },
       {
-        "id": 4,
-        "title": "Active Sessions",
-        "type": "gauge",
-        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 8},
-        "targets": [
-          {
-            "expr": "tomcat_sessions_active_current_sessions",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "min": 0,
-            "max": 1000,
-            "thresholds": {
-              "steps": [
-                {"color": "green", "value": null},
-                {"color": "yellow", "value": 500},
-                {"color": "red", "value": 800}
-              ]
-            }
-          }
-        }
-      },
-      {
-        "id": 5,
+        "id": 3,
         "title": "JVM Memory Usage",
         "type": "graph",
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
@@ -129,7 +76,7 @@
         "legend": {"show": true, "values": true, "current": true}
       },
       {
-        "id": 6,
+        "id": 4,
         "title": "Database Connection Pool",
         "type": "graph",
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
@@ -157,7 +104,7 @@
         "legend": {"show": true, "values": true, "current": true}
       },
       {
-        "id": 7,
+        "id": 5,
         "title": "CPU Usage",
         "type": "gauge",
         "gridPos": {"h": 8, "w": 6, "x": 12, "y": 16},
@@ -183,7 +130,7 @@
         }
       },
       {
-        "id": 8,
+        "id": 6,
         "title": "GC Pause Rate",
         "type": "graph",
         "gridPos": {"h": 8, "w": 6, "x": 18, "y": 16},
@@ -201,7 +148,7 @@
         "legend": {"show": true}
       },
       {
-        "id": 10,
+        "id": 7,
         "title": "ML Model Performance",
         "type": "graph",
         "gridPos": {"h": 8, "w": 8, "x": 16, "y": 20},
@@ -214,36 +161,6 @@
           {"label": "accuracy", "min": 0, "max": 1}
         ],
         "legend": {"show": true}
-      },
-      {
-        "id": 11,
-        "title": "Kafka Message Rate",
-        "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28},
-        "targets": [
-          {"expr": "rate(kafka_server_brokertopicmetrics_messagesin_total[5m])", "legendFormat": "Messages In/sec", "refId": "A"},
-          {"expr": "rate(kafka_server_brokertopicmetrics_messagesout_total[5m])", "legendFormat": "Messages Out/sec", "refId": "B"}
-        ],
-        "yAxes": [
-          {"label": "messages/sec", "min": 0},
-          {"show": false}
-        ],
-        "legend": {"show": true, "values": true, "current": true}
-      },
-      {
-        "id": 12,
-        "title": "Redis Cache Performance",
-        "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28},
-        "targets": [
-          {"expr": "up{job=\"redis\"} * 95 OR 0", "legendFormat": "Cache Hit Rate % (Mock)", "refId": "A"},
-          {"expr": "up{job=\"redis\"} * 10 OR 0", "legendFormat": "Connected Clients (Mock)", "refId": "B"}
-        ],
-        "yAxes": [
-          {"label": "hit rate %", "min": 0, "max": 100},
-          {"label": "clients", "min": 0}
-        ],
-        "legend": {"show": true, "values": true, "current": true}
       }
     ],
     "time": {

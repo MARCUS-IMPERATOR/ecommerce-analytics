@@ -8,7 +8,6 @@ from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse
 import uvicorn
 
-# --- Prometheus imports ---
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from prometheus_fastapi_instrumentator import Instrumentator
 
@@ -25,7 +24,6 @@ consumer_instance = None
 consumer_thread = None
 consumer_running = False
 
-# --- Prometheus custom metrics ---
 ml_predictions_total = Counter(
     'ml_predictions_total',
     'Total number of ML predictions made',
@@ -58,7 +56,6 @@ ml_service_health = Gauge(
 
 
 def start_kafka_consumer():
-    """Start Kafka consumer in background thread"""
     global kafka_healthy, consumer_instance, consumer_running
     try:
         kafka_bootstrap_servers = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')
@@ -87,19 +84,16 @@ def start_kafka_consumer():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manage FastAPI application lifecycle"""
     global consumer_thread, kafka_healthy
 
     logger.info("Starting ML Service...")
 
-    # Start Kafka consumer
     consumer_thread = threading.Thread(target=start_kafka_consumer, daemon=True)
     consumer_thread.start()
 
     await asyncio.sleep(2)
     kafka_healthy = True
 
-    # Init Prometheus metrics
     ml_service_health.labels(component='kafka').set(1)
     ml_service_health.labels(component='model').set(1)
     ml_service_health.labels(component='database').set(1)
@@ -120,7 +114,6 @@ async def lifespan(app: FastAPI):
             pass
 
 
-# --- Create FastAPI app ---
 app = FastAPI(
     title="ML Service",
     description="Machine Learning Service for E-commerce Analytics",
@@ -128,7 +121,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Attach Prometheus Instrumentator
 instrumentator = Instrumentator().instrument(app)
 instrumentator.expose(app)
 
@@ -154,7 +146,6 @@ async def readiness_check():
 
 @app.get("/predict")
 async def predict(data: dict):
-    """Example prediction endpoint with metrics"""
     model_name = data.get('model', 'default')
 
     ml_predictions_total.labels(model_name=model_name, prediction_type='classification').inc()
@@ -167,7 +158,6 @@ async def predict(data: dict):
 
 @app.get("/metrics/prometheus")
 async def prometheus_metrics():
-    """Expose metrics in Prometheus format"""
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 

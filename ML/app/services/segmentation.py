@@ -95,7 +95,6 @@ class Segmentation:
 
     def find_best_clusters(self, X: np.ndarray) -> int:
         best_k, best_score = 2, -1
-
         for k in range(2, min(7, len(X))):
             try:
                 kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
@@ -106,10 +105,8 @@ class Segmentation:
                     if score > best_score:
                         best_score = score
                         best_k = k
-
             except Exception as e:
                 logger.warning(f"Clustering failed for k={k}: {e}")
-
         logger.info(f"Best cluster count: {best_k} (score: {best_score:.3f})")
         return best_k
 

@@ -14,8 +14,6 @@ public interface OrderItemsRepository extends JpaRepository<OrderItems, Integer>
     @Query("SELECT oi FROM OrderItems oi WHERE oi.product.productId = :productId")
     List<OrderItems> findByProductId(@Param("productId") Integer productId);
 
-    //Research this
-
     @Query("SELECT oi.product, SUM(oi.quantity) as totalSold FROM OrderItems oi " +
             "GROUP BY oi.product ORDER BY totalSold DESC")
     List<Object[]> findTopSellingProducts(Pageable pageable);

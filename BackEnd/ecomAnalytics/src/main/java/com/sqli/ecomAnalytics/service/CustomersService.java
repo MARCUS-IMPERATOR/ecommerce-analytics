@@ -66,6 +66,14 @@ public class CustomersService {
         return savedCustomer;
     }
 
+    @Cacheable(value = "customerProfileCache", key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).customerCodeKey(#customerCode)")
+    @Transactional(readOnly = true)
+    public Customers findCustomerByCustomerCode(String customerCode) {
+        if (customerRepository.findByCustomerCode(customerCode).isEmpty()) {
+            throw new CustomerNotFoundException("Customer with code " + customerCode + " not found");
+        }
+        return customerRepository.findByCustomerCode(customerCode).get();
+    }
     @Caching(evict = {
             @CacheEvict(value = "customerProfileCache", key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).customerIdKey(#customerId)"),
             @CacheEvict(value = "customerCodeCache", allEntries = true),
@@ -119,14 +127,14 @@ public class CustomersService {
         return customerRepository.findAll();
     }
 
-    @Cacheable(value = "customerProfileCache", key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).customerCodeKey(#customerCode)")
-    @Transactional(readOnly = true)
-    public Customers findCustomerByCustomerCode(String customerCode) {
-        if (customerRepository.findByCustomerCode(customerCode).isEmpty()) {
-            throw new CustomerNotFoundException("Customer with code " + customerCode + " not found");
-        }
-        return customerRepository.findByCustomerCode(customerCode).get();
-    }
+//    @Cacheable(value = "customerProfileCache", key = "T(com.sqli.ecomAnalytics.util.RedisCacheKeys).customerCodeKey(#customerCode)")
+//    @Transactional(readOnly = true)
+//    public Customers findCustomerByCustomerCode(String customerCode) {
+//        if (customerRepository.findByCustomerCode(customerCode).isEmpty()) {
+//            throw new CustomerNotFoundException("Customer with code " + customerCode + " not found");
+//        }
+//        return customerRepository.findByCustomerCode(customerCode).get();
+//    }
 
     @Transactional(readOnly = true)
     public Optional<Customers> findCustomerByFirstNameAndLastName(String firstName, String lastName) {

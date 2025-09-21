@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductRecommendationsRepository extends JpaRepository<ProductRecommendations, Integer> {
-    //Research both of those queries
+
     @Query("SELECT pr FROM ProductRecommendations pr WHERE pr.customerId = :customerId ORDER BY pr.score DESC")
     List<ProductRecommendations> findTopRecommendationsForCustomer(@Param("customerId") Integer customerId,
                                                                    Pageable pageable);

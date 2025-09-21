@@ -1,14 +1,11 @@
-#!/bin/bash
 set -e
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m' 
 
-# Function to print colored output
 print_status() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -25,13 +22,11 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Function to get container name from service name
 get_container_name() {
     local service_name=$1
     docker-compose ps -q "$service_name" 2>/dev/null | xargs docker inspect --format='{{.Name}}' 2>/dev/null | sed 's/^.//' || echo "$service_name"
 }
 
-# Function to wait for service health
 wait_for_service() {
     local service_name=$1
     local max_attempts=$2
@@ -40,9 +35,7 @@ wait_for_service() {
     print_status "Waiting for $service_name to be healthy..."
     
     while [ $attempt -le $max_attempts ]; do
-        # Check if service is running
         if docker-compose ps --services --filter="status=running" | grep -q "^$service_name$"; then
-            # Get the actual container name
             local container_name=$(get_container_name "$service_name")
             local health_status=$(docker inspect --format='{{.State.Health.Status}}' "$container_name" 2>/dev/null || echo "no-health-check")
             
@@ -61,12 +54,10 @@ wait_for_service() {
     return 1
 }
 
-# Function to check service logs for errors
 check_service_logs() {
     local service_name=$1
     print_status "Checking logs for $service_name..."
     
-    # Get last 20 lines of logs and check for common error patterns
     local logs=$(docker-compose logs --tail=20 "$service_name" 2>/dev/null || echo "")
     
     if echo "$logs" | grep -iE "(error|exception|failed|refused)" | head -3; then
@@ -76,10 +67,8 @@ check_service_logs() {
 
 print_status "Deploying E-commerce Analytics Application..."
 
-# Change to Docker directory
 cd ../Docker
 
-# Check if required files exist
 if [ ! -f "docker-compose.yml" ]; then
     print_error "docker-compose.yml not found in current directory"
     exit 1
@@ -97,7 +86,6 @@ docker-compose build --parallel --quiet
 print_status "Starting infrastructure services (Phase 1: Core Services)..."
 docker-compose up -d postgres redis zookeeper
 
-# Wait for core services
 wait_for_service "postgres" 12
 wait_for_service "redis" 8
 wait_for_service "zookeeper" 20
@@ -127,7 +115,7 @@ print_status "Starting backend service (depends on ML service)..."
 docker-compose up -d backend
 
 print_status "Waiting for backend service to be ready..."
-wait_for_service "backend" 30
+wait_for_service "backend" 60
 
 print_status "Starting frontend and additional services..."
 docker-compose up -d frontend kafkaui
@@ -159,23 +147,23 @@ done
 echo ""
 print_success "Deployment complete!"
 echo ""
-echo "📱 APPLICATION URLS:"
+echo " APPLICATION URLS:"
 echo "  Frontend:           http://localhost:3000"
 echo "  Backend API:        http://localhost:8080"
 echo "  ML Service:         http://localhost:8000"
 echo ""
-echo "📊 MONITORING URLS:"
+echo " MONITORING URLS:"
 echo "  Jaeger UI:          http://localhost:16686"
 echo "  Prometheus:         http://localhost:9090"
 echo "  Grafana:            http://localhost:3001 (admin/admin)"
 echo "  Kafka UI:           http://localhost:9095"
 echo ""
-echo "🔍 HEALTH CHECK URLS:"
+echo " HEALTH CHECK URLS:"
 echo "  Backend Health:     http://localhost:8080/actuator/health"
 echo "  ML Service Health:  http://localhost:8000/health"
 echo "  OpenTelemetry:      http://localhost:13133"
 echo ""
-echo "📋 USEFUL COMMANDS:"
+echo " USEFUL COMMANDS:"
 echo "  View logs:          docker-compose logs -f [service-name]"
 echo "  All logs:           docker-compose logs -f"
 echo "  Restart service:    docker-compose restart [service-name]"
@@ -183,7 +171,6 @@ echo "  Scale service:      docker-compose up -d --scale [service-name]=N"
 echo "  Stop all:           docker-compose down"
 echo "  Clean rebuild:      docker-compose down -v && docker-compose build --no-cache"
 
-# Check if any services failed
 failed_services=$(docker-compose ps --filter="status=exited" --format="{{.Name}}" | tr '\n' ' ')
 if [ ! -z "$failed_services" ]; then
     echo ""

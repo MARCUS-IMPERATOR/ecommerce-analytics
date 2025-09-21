@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main]
   pull_request:
     branches: [ main ]
 
@@ -55,7 +55,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Cache Maven
+      - name: Cache Maven Dependencies
         uses: actions/cache@v4
         with:
           path: ~/.m2
@@ -202,7 +202,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - name: Notify about built images
+      - name: Show Build Images Status
         run: |
           echo "Images successfully built and pushed to DockerHub!"
           echo "Backend: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:latest"

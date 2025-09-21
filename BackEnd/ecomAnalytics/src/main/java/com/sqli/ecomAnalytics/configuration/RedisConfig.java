@@ -11,9 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
@@ -35,37 +33,31 @@ public class RedisConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-
         GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
-
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer));
-
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
         cacheConfigurations.put("customer", cacheConfig.entryTtl(Duration.ofHours(24)));
         cacheConfigurations.put("analytics", cacheConfig.entryTtl(Duration.ofHours(1)));
-        cacheConfigurations.put("products", cacheConfig.entryTtl(Duration.ofHours(6)));
+        cacheConfigurations.put("products", cacheConfig.entryTtl(Duration.ofHours(1)));
         cacheConfigurations.put("recommendations", cacheConfig.entryTtl(Duration.ofHours(12)));
         cacheConfigurations.put("allCustomersCache",cacheConfig.entryTtl(Duration.ofHours(1)));
         cacheConfigurations.put("customerProfileCache", cacheConfig.entryTtl(Duration.ofHours(24)));
         cacheConfigurations.put("customerCodeCache", cacheConfig.entryTtl(Duration.ofHours(24)));
         cacheConfigurations.put("highestPayingCustomersCache", cacheConfig.entryTtl(Duration.ofHours(6)));
-        cacheConfigurations.put("productCatalogCache", cacheConfig.entryTtl(Duration.ofHours(6)));
+        cacheConfigurations.put("productCatalogCache", cacheConfig.entryTtl(Duration.ofHours(1)));
         cacheConfigurations.put("productByIdCache", cacheConfig.entryTtl(Duration.ofHours(24)));
         cacheConfigurations.put("productByCategoryCache", cacheConfig.entryTtl(Duration.ofHours(6)));
-        cacheConfigurations.put("productByBrandCache", cacheConfig.entryTtl(Duration.ofHours(6)));
-        cacheConfigurations.put("productSearchCache", cacheConfig.entryTtl(Duration.ofHours(2)));
-        cacheConfigurations.put("customerSpentCache", cacheConfig.entryTtl(Duration.ofHours(12)));
-        cacheConfigurations.put("customersAnalyticsCache", cacheConfig.entryTtl(Duration.ofHours(6)));
-        cacheConfigurations.put("kpiCache", cacheConfig.entryTtl(Duration.ofHours(6)));
-        cacheConfigurations.put("productsPerformanceCache", cacheConfig.entryTtl(Duration.ofHours(6)));
-        cacheConfigurations.put("salesTrendCache", cacheConfig.entryTtl(Duration.ofHours(6)));
-
-
+        cacheConfigurations.put("productByBrandCache", cacheConfig.entryTtl(Duration.ofHours(1)));
+        cacheConfigurations.put("productSearchCache", cacheConfig.entryTtl(Duration.ofHours(1)));
+        cacheConfigurations.put("customerSpentCache", cacheConfig.entryTtl(Duration.ofHours(1)));
+        cacheConfigurations.put("customersAnalyticsCache", cacheConfig.entryTtl(Duration.ofHours(1)));
+        cacheConfigurations.put("kpiCache", cacheConfig.entryTtl(Duration.ofHours(1)));
+        cacheConfigurations.put("productsPerformanceCache", cacheConfig.entryTtl(Duration.ofHours(1)));
+        cacheConfigurations.put("salesTrendCache", cacheConfig.entryTtl(Duration.ofHours(1)));
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(cacheConfig)
                 .withInitialCacheConfigurations(cacheConfigurations)

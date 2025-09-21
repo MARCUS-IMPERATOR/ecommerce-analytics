@@ -34,17 +34,14 @@ processors:
         action: insert
 
 exporters:
-  # Export traces to Jaeger via OTLP gRPC
   otlp:
     endpoint: jaeger:4317
     tls:
       insecure: true
 
-  # Expose metrics for Prometheus to scrape
   prometheus:
     endpoint: "0.0.0.0:8889"
 
-  # Debug logs (optional, good for testing)
   debug:
     verbosity: detailed
 
