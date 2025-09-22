@@ -23,6 +23,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/login/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
