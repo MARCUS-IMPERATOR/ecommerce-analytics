@@ -155,7 +155,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./FrontEnd/ecommerce-analytics-dashboard
-          file: ./FrontEnd/ecommerce-analytics-dashboard/DockerFile
+          file: ./FrontEnd/ecommerce-analytics-dashboard/Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
