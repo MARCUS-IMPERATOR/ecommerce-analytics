@@ -44,8 +44,9 @@ An analytics platform that provides an interactive dashboard, machine learning p
 
 ```bash
 git clone https://github.com/MARCUS-IMPERATOR/ecommerce-analytics.git
-cd ecommerce-analytics
-docker-compose up --build
+cd ecommerce-analytics/ecommerce-analytics/scripts
+bash build.sh
+bash deploy.sh
 ```
 
 This will start:
